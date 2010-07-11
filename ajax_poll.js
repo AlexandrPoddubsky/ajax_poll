@@ -1,4 +1,5 @@
 // $Id$
+(function ($) {
 
 /**
  * @file
@@ -8,7 +9,8 @@
 /**
  * Behavior to add AJAX voting support to polls.
  */
-Drupal.behaviors.ajaxPoll = function(context) {
+Drupal.behaviors.ajaxPoll = {};
+Drupal.behaviors.ajaxPoll.attach = function(context) {
   $('form.ajax-poll:not(.ajax-poll-processed)', context).addClass('ajax-poll-processed').each(function() {
     // Find the form and poll wrapper items that will be affected.
     var $form = $(this);
@@ -45,7 +47,7 @@ Drupal.behaviors.ajaxPoll = function(context) {
           // callback. We fix this here for consistency, even though this will
           // be replaced by the AJAX Poll beforeSubmit() function above.
           $pollWrapper.find('form').attr('action', window.location.pathname);
-          Drupal.attachBehaviors($pollWrapper[0]);
+          Drupal.attachBehaviors($pollWrapper.parent().get(0));
         }
       },
       complete: function(response, status) {
@@ -79,3 +81,5 @@ Drupal.behaviors.ajaxPoll = function(context) {
 Drupal.theme.prototype.ajaxPollError = function() {
   return '<div class="messages error">A parsing or network error has occurred.</div>';
 };
+
+})(jQuery);

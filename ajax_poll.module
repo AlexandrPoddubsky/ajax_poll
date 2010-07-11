@@ -27,25 +27,12 @@ function ajax_poll_menu() {
 }
 
 /**
- * Implements hook_init().
- */
-function ajax_poll_init() {
-  // It would be ideal to not load this JavaScript on every page. However since
-  // block caching will not add the necessary files if block caching is enabled,
-  // we have to add these files on every page.
-  if (variable_get('block_cache', 0)) {
-    drupal_add_js('misc/jquery.form.js');
-    drupal_add_js(drupal_get_path('module', 'ajax_poll') . '/ajax_poll.js');
-  }
-}
-
-/**
  * Implements hook_form_alter().
  */
 function ajax_poll_form_alter(&$form, $form_state, $form_id) {
   if (in_array($form_id, array('poll_view_voting', 'poll_cancel_form'))) {
-    drupal_add_js('misc/jquery.form.js');
-    drupal_add_js(drupal_get_path('module', 'ajax_poll') . '/ajax_poll.js');
+    $form['#attached']['js'][] = 'misc/jquery.form.js';
+    $form['#attached']['js'][] = drupal_get_path('module', 'ajax_poll') . '/ajax_poll.js';
 
     $node = isset($form['#node']) ? $form['#node'] : node_load($form['#nid']);
 
@@ -77,23 +64,18 @@ function ajax_poll_form_alter(&$form, $form_state, $form_id) {
  * Menu callback for poll/ajax.
  */
 function ajax_poll_callback($type, $teaser, $block) {
-  $form_state = array('storage' => NULL, 'submitted' => FALSE);
-  $form_build_id = $_POST['form_build_id'];
-  $form = form_get_cache($form_build_id, $form_state);
+  list($form, $form_state, $form_id, $form_build_id) = ajax_get_form();
 
-  $args = $form['#parameters'];
-  $form_id = array_shift($args);
-  $form_state['post'] = $form['#post'] = $_POST;
-  $form['#programmed'] = $form['#redirect'] = FALSE;
-
+  // Build, validate and if possible, submit the form.
   drupal_process_form($form_id, $form, $form_state);
 
   $nid = isset($form['#nid']) ? $form['#nid'] : $form['#node']->nid;
   $node = node_load(array('nid' => $nid));
-  $poll = poll_view($node, $teaser, FALSE, $block);
+  $view_mode = $teaser ? 'teaser' : 'full';
+  $poll = $block ? poll_block_latest_poll_view($node) : poll_view($node, $view_mode);
   $status = count(drupal_get_messages('error', FALSE)) == 0;
   $messages = theme('status_messages');
   $output = drupal_render($poll->content);
 
-  drupal_json(array('status' => $status, 'messages' => $messages, 'output' => $output));
+  drupal_json_output(array('status' => $status, 'messages' => $messages, 'output' => $output));
 }
