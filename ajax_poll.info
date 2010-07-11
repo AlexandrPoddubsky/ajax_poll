@@ -1,0 +1,6 @@
+; $Id$
+name = AJAX Poll
+description = Provides an option to vote on polls without reloading the page.
+core = 6.x
+package = User interface
+dependencies[] = poll
