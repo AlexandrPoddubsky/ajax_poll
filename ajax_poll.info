@@ -4,4 +4,3 @@ description = Enables voting on polls without reloading the page.
 core = 7.x
 package = User interface
 dependencies[] = poll
-files[] = ajax_poll.module
