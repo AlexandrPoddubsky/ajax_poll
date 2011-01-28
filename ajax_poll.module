@@ -51,12 +51,29 @@ function ajax_poll_form_alter(&$form, $form_state, $form_id) {
 
     // Add the AJAX Poll class to the form.
     if (empty($form['#attributes']['class'])) {
-      $form['#attributes']['class'] = 'ajax-poll';
+      $form['#attributes']['class'] = array('ajax-poll');
     }
     else {
-      $form['#attributes']['class'] .= ' ajax-poll';
+      $form['#attributes']['class'][] = 'ajax-poll';
     }
-    $form['#attributes']['class'] .= ' ajax-' . $action;
+    $form['#attributes']['class'][] = ' ajax-' . $action;
+
+    // Add submit handler to supress redirection on AJAX requests.
+    if ($action == 'vote') {
+      $form['vote']['#submit'][] = 'ajax_poll_submit';
+    }
+    else {
+      $form['actions']['submit']['#submit'][] = 'ajax_poll_submit';
+    }
+  }
+}
+
+/**
+ * Form API #submit handler. Disable redirects if doing an AJAX vote.
+ */
+function ajax_poll_submit(&$form, &$form_state) {
+  if (strpos($_GET['q'], 'poll/ajax') === 0) {
+    $form_state['redirect'] = FALSE;
   }
 }
 
@@ -64,8 +81,13 @@ function ajax_poll_form_alter(&$form, $form_state, $form_id) {
  * Menu callback for poll/ajax.
  */
 function ajax_poll_callback($type, $node, $teaser, $block) {
-  // Calling poll_view() or poll_block_latest_poll_view() will trigger the
-  // current form (either cancel or vote).
+  // Call poll_view to trigger the current submit handlers.
+  poll_view($node, 'full');
+
+  // Reset POST and the $node so that we get fresh copies.
+  unset($_POST);
+  $node = node_load($node->nid, NULL, TRUE);
+
   $view_mode = $teaser ? 'teaser' : 'full';
   $poll = $block ? poll_block_latest_poll_view($node) : poll_view($node, $view_mode);
   $status = count(drupal_get_messages('error', FALSE)) == 0;

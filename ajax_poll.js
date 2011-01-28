@@ -14,7 +14,7 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
   $('form.ajax-poll:not(.ajax-poll-processed)', context).addClass('ajax-poll-processed').each(function() {
     // Find the form and poll wrapper items that will be affected.
     var $form = $(this);
-    var $pollWrapper = $form.parents('.content, .poll');
+    var $pollWrapper = $form.parents('.content:first');
 
     // Find all the settings for this form.
     var url = $form.find('input[name=ajax_url]').val();
@@ -35,11 +35,6 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
         $form.find('input.form-submit').attr('disabled', '').val(enabledText);
         $form.find('.messages').remove();
 
-        // Display any new messages.
-        if (response.messages) {
-          $form.prepend(response.messages);
-        }
-
         // On success, replace the poll content with the new content.
         if (response.status) {
           $pollWrapper.html(response.output);
@@ -48,6 +43,11 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
           // be replaced by the AJAX Poll beforeSubmit() function above.
           $pollWrapper.find('form').attr('action', window.location.pathname);
           Drupal.attachBehaviors($pollWrapper.parent().get(0));
+        }
+
+        // Display any new messages.
+        if (response.messages) {
+          $pollWrapper.prepend(response.messages);
         }
       },
       complete: function(response, status) {
