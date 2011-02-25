@@ -1,4 +1,3 @@
-// $Id$
 
 AJAX Poll adds the ability for users to vote on polls without reloading the
 page. It works with the normal Poll module included with Drupal core. It affects
