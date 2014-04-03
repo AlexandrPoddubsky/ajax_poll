@@ -41,6 +41,13 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
     else
       $pollWrapper = $form.parents('.poll:first');
 
+    // Disable submit button until a choice has been made.
+    $pollWrapper.find('input.form-submit').attr('disabled', 'disabled');
+
+    $('input[name=choice]').click(function() {
+      $pollWrapper.find('input.form-submit').removeAttr('disabled');
+    });
+
     // Set up the options for the AJAX voting mechanism.
     var options = {
       url: url,

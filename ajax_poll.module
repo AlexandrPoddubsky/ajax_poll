@@ -32,12 +32,12 @@ function ajax_poll_form_alter(&$form, $form_state, $form_id) {
   if (in_array($form_id, array('poll_view_voting', 'poll_cancel_form'))) {
     drupal_add_library('system', 'jquery.form');
     $form['#attached']['js'][] = drupal_get_path('module', 'ajax_poll') . '/ajax_poll.js';
-    
+
     $node = isset($form['#node']) ? $form['#node'] : node_load($form['#nid']);
 
     $teaser = (int) isset($node->teaser);
     $block = (int) !empty($form['#block']);
-    
+
     $action = ($form_id == 'poll_view_voting') ? 'vote' : 'cancel';
 
     $form['ajax_url'] = array(
@@ -57,7 +57,7 @@ function ajax_poll_form_alter(&$form, $form_state, $form_id) {
     else {
       $form['#attributes']['class'][] = 'ajax-poll';
     }
-    
+
     $form['#attributes']['class'][] = ' ajax-' . $action;
 
     // Add submit handler to supress redirection on AJAX requests.
@@ -97,33 +97,33 @@ function ajax_poll_callback($type, $node, $teaser, $block) {
   $status = count(drupal_get_messages('error', FALSE)) == 0;
   $messages = theme('status_messages');
   $output = drupal_render($content);
-  
+
   drupal_json_output(array('status' => $status, 'messages' => $messages, 'output' => $output));
 }
 
 /**
  * Utility function that obtains the content of the poll node.
- * 
+ *
  * @param stdClass $node
  *                 The node object.
- *                 
+ *
  * @param boolean  $is_block
  *                 Whether or not the content is being presented in a block.
- *                 
+ *
  * @param boolean  $is_teaser
  *                 Whether or not the content is being rendered as a teaser.
- * 
+ *
  */
 function ajax_poll_get_poll_content(stdClass $node, $is_block, $is_teaser) {
   if (!$is_block) {
     $view_mode = $is_teaser ? 'teaser' : 'full';
-  
+
     $poll = poll_view($node, $view_mode);
   }
   else {
     $poll = poll_block_latest_poll_view($node);
   }
-  
+
   $content = $poll->content;
 
   return $content;
