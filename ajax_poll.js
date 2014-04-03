@@ -13,6 +13,23 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
   $('form.ajax-poll:not(.ajax-poll-processed)', context).addClass('ajax-poll-processed').each(function() {
     // Find the form and poll wrapper items that will be affected.
     var $form = $(this);
+    var $initialTarget;
+    var $pollWrapper;
+
+    if ($form.hasClass('ajax-vote')) {
+      $initialTarget = $form;
+    }
+    else {
+      $initialTarget = $form.closest('.poll');
+    }
+
+    $pollWrapper = $initialTarget.closest(".ajax-poll-wrapper");
+
+    if ($pollWrapper.length == 0) {
+      $initialTarget.wrap('<div class="ajax-poll-wrapper" />');
+
+      $pollWrapper = $initialTarget.closest(".ajax-poll-wrapper");
+    }
 
     // Find all the settings for this form.
     var url = $form.find('input[name=ajax_url]').val();
