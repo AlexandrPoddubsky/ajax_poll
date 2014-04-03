@@ -37,9 +37,9 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
     var enabledText = $form.find('input.form-submit').val();
 
     if (url.indexOf('vote') > 0)
-      var $pollWrapper = $form.parents('.ajax-poll-wrapper:first');
+      $pollWrapper = $form.parents('.ajax-poll-wrapper:first');
     else
-      var $pollWrapper = $form.parents('.poll:first');
+      $pollWrapper = $form.parents('.poll:first');
 
     // Set up the options for the AJAX voting mechanism.
     var options = {
