@@ -106,7 +106,7 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
  * debugging code.
  */
 Drupal.theme.prototype.ajaxPollError = function() {
-  return '<div class="messages error">A parsing or network error has occurred.</div>';
+  return '<div class="messages error">' + Drupal.t('A parsing or network error has occurred.') + '</div>';
 };
 
 })(jQuery);
