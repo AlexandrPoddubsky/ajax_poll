@@ -30,7 +30,7 @@ function ajax_poll_menu() {
  */
 function ajax_poll_form_alter(&$form, $form_state, $form_id) {
   if (in_array($form_id, array('poll_view_voting', 'poll_cancel_form'))) {
-    $form['#attached']['js'][] = 'misc/jquery.form.js';
+    drupal_add_library('system', 'jquery.form');
     $form['#attached']['js'][] = drupal_get_path('module', 'ajax_poll') . '/ajax_poll.js';
 
     $node = isset($form['#node']) ? $form['#node'] : node_load($form['#nid']);
