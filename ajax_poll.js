@@ -13,12 +13,16 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
   $('form.ajax-poll:not(.ajax-poll-processed)', context).addClass('ajax-poll-processed').each(function() {
     // Find the form and poll wrapper items that will be affected.
     var $form = $(this);
-    var $pollWrapper = $form.parents('.content:first');
 
     // Find all the settings for this form.
     var url = $form.find('input[name=ajax_url]').val();
     var disabledText = $form.find('input[name=ajax_text]').val();
     var enabledText = $form.find('input.form-submit').val();
+
+    if (url.indexOf('vote') > 0)
+      var $pollWrapper = $form.parents('.ajax-poll-wrapper:first');
+    else
+      var $pollWrapper = $form.parents('.poll:first');
 
     // Set up the options for the AJAX voting mechanism.
     var options = {
@@ -36,7 +40,7 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
 
         // On success, replace the poll content with the new content.
         if (response.status) {
-          $pollWrapper.html(response.output);
+          $pollWrapper.replaceWith(response.output);
           // The action attribute will be the path of the AJAX Poll menu
           // callback. We fix this here for consistency, even though this will
           // be replaced by the AJAX Poll beforeSubmit() function above.
