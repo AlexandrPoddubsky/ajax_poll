@@ -47,6 +47,10 @@ function ajax_poll_form_alter(&$form, $form_state, $form_id) {
       '#type' => 'hidden',
       '#value' => ($action == 'vote') ? t('Voting...') : t('Canceling...'),
     );
+    $form['ajax_initial_text'] = array(
+      '#type' => 'hidden',
+      '#value' => t('Make your choice'),
+    );
 
     // Add the AJAX Poll class to the form.
     if (empty($form['#attributes']['class'])) {

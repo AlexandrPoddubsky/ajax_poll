@@ -18,7 +18,14 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
     // Find all the settings for this form.
     var url = $form.find('input[name=ajax_url]').val();
     var disabledText = $form.find('input[name=ajax_text]').val();
+    var initialText = $form.find('input[name=ajax_initial_text]').val();
     var enabledText = $form.find('input.form-submit').val();
+
+    // Disable submit button until a choice has been made.
+    $form.find('input.form-submit').attr('disabled', true).val(initialText);
+    $('input[name=choice]').click(function() {
+      $form.find('input.form-submit').attr('disabled', '').val(enabledText);
+    });
 
     // Set up the options for the AJAX voting mechanism.
     var options = {
