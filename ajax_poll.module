@@ -63,6 +63,7 @@ function ajax_poll_form_alter(&$form, $form_state, $form_id) {
     // Add submit handler to supress redirection on AJAX requests.
     if ($action == 'vote') {
       $form['vote']['#submit'][] = 'ajax_poll_submit';
+
       $form['#prefix'] = '<div class="ajax-poll-wrapper">';
       $form['#suffix'] = '</div>';
     }
