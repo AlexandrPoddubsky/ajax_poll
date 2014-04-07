@@ -58,7 +58,7 @@ Drupal.behaviors.ajaxPoll.attach = function(context) {
 
         if (status == 'error' || status == 'parsererror') {
           $('.messages').remove();
-          
+
           $form.prepend(Drupal.theme('ajaxPollError'));
         }
       },

@@ -93,7 +93,7 @@ function ajax_poll_callback($type, $node, $teaser, $block) {
   unset($_POST);
   $node = node_load($node->nid, NULL, TRUE);
 
-  $content = ajax_poll_get_poll_content($node, $block, $teaser);
+  $content = ajax_poll_get_poll_content($node, $block, $teaser, $type);
 
   $status = count(drupal_get_messages('error', FALSE)) == 0;
   $messages = theme('status_messages');
@@ -105,27 +105,39 @@ function ajax_poll_callback($type, $node, $teaser, $block) {
 /**
  * Utility function that obtains the content of the poll node.
  *
- * @param stdClass $node
- *                 The node object.
+ * @param stdClass
+ *   $node The node object.
  *
- * @param boolean  $is_block
- *                 Whether or not the content is being presented in a block.
+ * @param boolean
+ *   $is_block Whether or not the content is being presented in a block.
  *
- * @param boolean  $is_teaser
- *                 Whether or not the content is being rendered as a teaser.
+ * @param boolean
+ *   $is_teaser Whether or not the content is being rendered as a teaser.
+ *
+ * @param string
+ *   $type vote or cancel.
  *
  */
-function ajax_poll_get_poll_content(stdClass $node, $is_block, $is_teaser) {
+function ajax_poll_get_poll_content(stdClass $node, $is_block, $is_teaser, $type) {
   if (!$is_block) {
     $view_mode = $is_teaser ? 'teaser' : 'full';
 
-    $poll = poll_view($node, $view_mode);
+    if ($type == 'vote') {
+      // This will allow for node overrides of the results screen.
+      $poll = node_view($node, $view_mode);
+      $content = $poll['poll_view_results'];
+    }
+    // Cancel
+    else {
+      // This will give us the voting form.
+      $poll = poll_view($node, $view_mode);
+      $content = $poll->content;
+    }
   }
   else {
     $poll = poll_block_latest_poll_view($node);
+    $content = $poll->content;
   }
-
-  $content = $poll->content;
 
   return $content;
 }
