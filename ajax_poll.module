@@ -135,9 +135,42 @@ function ajax_poll_get_poll_content(stdClass $node, $is_block, $is_teaser, $type
     }
   }
   else {
-    $poll = poll_block_latest_poll_view($node);
+    $poll = ajax_poll_block_latest_poll_view($node);
     $content = $poll->content;
   }
 
   return $content;
+}
+
+/**
+ * Return content for 'latest poll' block. This is a modified function cloned
+ * from the poll module. Ajax poll does not need to replace the links on the
+ * page so that has been removed.
+ *
+ * @see poll.module.
+ *
+ * @param $node
+ *   The node object to load.
+ */
+function ajax_poll_block_latest_poll_view($node) {
+  // This is necessary for shared objects because PHP doesn't copy objects, but
+  // passes them by reference.  So when the objects are cached it can result in
+  // the wrong output being displayed on subsequent calls.  The cloning and
+  // unsetting of $node->content prevents the block output from being the same
+  // as the node output.
+  $node = clone $node;
+  unset($node->content);
+
+  // No 'read more' link.
+  $node->readmore = FALSE;
+  $node->teaser = '';
+
+  if (!empty($node->allowvotes)) {
+    $node->content['poll_view_voting'] = drupal_get_form('poll_view_voting', $node, TRUE);
+  }
+  else {
+    $node->content['poll_view_results'] = array('#markup' => poll_view_results($node, TRUE, TRUE));
+  }
+
+  return $node;
 }
